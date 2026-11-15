@@ -1,69 +1,162 @@
-import Image from "next/image";
+import { Suspense } from 'react'
+import { getSettings, getTestimonials, getProjects, getServices, getFaqs } from '@/lib/sheets'
+import type { SiteSettings, Testimonial, Project, Service, FAQ } from '@/types'
 
-export default function Home() {
+import Navigation from '@/components/Navigation'
+import Hero from '@/components/Hero'
+import BrandPromise from '@/components/BrandPromise'
+import ServicesSection from '@/components/ServicesSection'
+import ProjectsSection from '@/components/ProjectsSection'
+import DesignInspiration from '@/components/DesignInspiration'
+import HowItWorks from '@/components/HowItWorks'
+import MaterialsSection from '@/components/MaterialsSection'
+import TestimonialsSection from '@/components/TestimonialsSection'
+import AboutSection from '@/components/AboutSection'
+import SocialSection from '@/components/SocialSection'
+import FAQSection from '@/components/FAQSection'
+import ContactSection from '@/components/ContactSection'
+import Footer from '@/components/Footer'
+
+// Skeleton fallbacks --------------------------------------------------------
+
+function SectionSkeleton({ height = 'h-64' }: { height?: string }) {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div
+      className={`w-full ${height} animate-pulse bg-stone-100`}
+      aria-hidden="true"
+    />
+  )
+}
+
+// Data fetching helpers — each returns a safe fallback on error -------------
+
+async function fetchSettings(): Promise<Partial<SiteSettings>> {
+  try {
+    return (await getSettings()) as Partial<SiteSettings>
+  } catch {
+    return {}
+  }
+}
+
+async function fetchTestimonials(): Promise<Testimonial[]> {
+  try {
+    return (await getTestimonials()) as Testimonial[]
+  } catch {
+    return []
+  }
+}
+
+async function fetchProjects(): Promise<Project[]> {
+  try {
+    return (await getProjects()) as Project[]
+  } catch {
+    return []
+  }
+}
+
+async function fetchServices(): Promise<Service[]> {
+  try {
+    return (await getServices()) as Service[]
+  } catch {
+    return []
+  }
+}
+
+async function fetchFaqs(): Promise<FAQ[]> {
+  try {
+    return (await getFaqs()) as FAQ[]
+  } catch {
+    return []
+  }
+}
+
+// Page (Server Component) ---------------------------------------------------
+
+export default async function Home() {
+  const [settings, testimonials, projects, services, faqs] = await Promise.all([
+    fetchSettings(),
+    fetchTestimonials(),
+    fetchProjects(),
+    fetchServices(),
+    fetchFaqs(),
+  ])
+
+  return (
+    <>
+      {/* Navigation — no data dependency, renders immediately */}
+      <Navigation />
+
+      {/* Hero */}
+      <Suspense fallback={<SectionSkeleton height="h-screen" />}>
+        <Hero
+          headline={(settings as SiteSettings).hero_headline}
+          subtitle={(settings as SiteSettings).hero_subtitle}
+          imageUrl={(settings as SiteSettings).hero_image_url}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+      </Suspense>
+
+      {/* Brand Promise */}
+      <BrandPromise />
+
+      {/* Services */}
+      <section id="services">
+        <Suspense fallback={<SectionSkeleton height="h-96" />}>
+          <ServicesSection services={services} />
+        </Suspense>
+      </section>
+
+      {/* Projects */}
+      <section id="projects">
+        <Suspense fallback={<SectionSkeleton height="h-[600px]" />}>
+          <ProjectsSection projects={projects} />
+        </Suspense>
+      </section>
+
+      {/* Design Inspiration */}
+      <Suspense fallback={<SectionSkeleton height="h-80" />}>
+        <DesignInspiration />
+      </Suspense>
+
+      {/* How It Works */}
+      <HowItWorks />
+
+      {/* Materials */}
+      <MaterialsSection />
+
+      {/* Testimonials */}
+      <section id="testimonials">
+        <Suspense fallback={<SectionSkeleton height="h-96" />}>
+          <TestimonialsSection testimonials={testimonials} />
+        </Suspense>
+      </section>
+
+      {/* About */}
+      <section id="about">
+        <AboutSection />
+      </section>
+
+      {/* Social */}
+      <Suspense fallback={<SectionSkeleton height="h-80" />}>
+        <SocialSection
+          instagramUrl={(settings as SiteSettings).instagram_url}
+          youtubeUrl={(settings as SiteSettings).youtube_url}
+        />
+      </Suspense>
+
+      {/* FAQ */}
+      <Suspense fallback={<SectionSkeleton height="h-64" />}>
+        <FAQSection faqs={faqs} />
+      </Suspense>
+
+      {/* Contact */}
+      <section id="contact">
+        <Suspense fallback={<SectionSkeleton height="h-96" />}>
+          <ContactSection settings={settings} />
+        </Suspense>
+      </section>
+
+      {/* Footer */}
+      <Footer settings={settings} />
+    </>
+  )
 }

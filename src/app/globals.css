@@ -1,26 +1,185 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap');
+@import 'tailwindcss';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  /* Custom colors */
+  --color-ivory: #FAF7F2;
+  --color-sand: #F0E9DC;
+  --color-sand-dark: #E5D9C8;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Olive scale */
+  --color-olive-50: #F5F7F2;
+  --color-olive-100: #EBF0E5;
+  --color-olive-200: #D4DEC4;
+  --color-olive-300: #BBCCA0;
+  --color-olive-400: #9AB87A;
+  --color-olive-500: #7A9A5A;
+  --color-olive-600: #5F7A45;
+  --color-olive-700: #4A5A3A;
+  --color-olive-800: #3A4A2C;
+  --color-olive-900: #2A3A1E;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Named olive aliases (keep for existing class names) */
+  --color-olive: #4A5A3A;
+  --color-olive-dark: #3A4A2C;
+  --color-olive-light: #6B7C5A;
+
+  /* Terracotta */
+  --color-terracotta: #C17A5A;
+
+  /* Brass scale */
+  --color-brass: #B8975A;
+  --color-brass-light: #D4B07A;
+
+  /* Charcoal */
+  --color-charcoal: #2C2C2C;
+
+  /* Warm gray */
+  --color-warm-gray: #6B6560;
+  --color-warm-gray-light: #9B9490;
+
+  /* Custom fonts */
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+
+  /* Custom font sizes */
+  --font-size-display-xl: clamp(3rem, 7vw, 6rem);
+  --line-height-display-xl: 1.05;
+  --letter-spacing-display-xl: -0.02em;
+
+  --font-size-display-lg: clamp(2.25rem, 5vw, 4rem);
+  --line-height-display-lg: 1.1;
+  --letter-spacing-display-lg: -0.02em;
+
+  --font-size-display-md: clamp(1.75rem, 3.5vw, 2.75rem);
+  --line-height-display-md: 1.15;
+  --letter-spacing-display-md: -0.01em;
+
+  --font-size-display-sm: clamp(1.4rem, 2.5vw, 2rem);
+  --line-height-display-sm: 1.2;
+  --letter-spacing-display-sm: -0.01em;
+
+  /* Custom keyframes and animations */
+  --animate-fade-up: fadeUp 0.6s ease-out forwards;
+  --animate-fade-in: fadeIn 0.4s ease-out forwards;
+
+  @keyframes fadeUp {
+    0% { opacity: 0; transform: translateY(24px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  :root {
+    --font-cormorant: 'Cormorant Garamond', Georgia, serif;
+    --font-inter: 'Inter', system-ui, sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    @apply bg-ivory text-charcoal font-sans;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-olive) 20%, transparent);
+    color: var(--color-olive-dark);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-olive);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+@layer utilities {
+  .container-site {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-pad {
+    @apply py-16 md:py-24 lg:py-32;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-display-xl {
+    font-size: clamp(3rem, 7vw, 6rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .text-display-lg {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .text-display-md {
+    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .text-display-sm {
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   Consultation Modal keyframes (Radix UI Dialog)
+   The prefers-reduced-motion block above collapses these automatically.
+   ------------------------------------------------------------------------- */
+@keyframes overlayShow {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes overlayHide {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes contentShow {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes contentHide {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to   { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+}
+
+@layer utilities {
+  .animate-overlayShow  { animation: overlayShow  200ms cubic-bezier(0.16, 1, 0.3, 1); }
+  .animate-overlayHide  { animation: overlayHide  150ms ease-in; }
+  .animate-contentShow  { animation: contentShow  250ms cubic-bezier(0.16, 1, 0.3, 1); }
+  .animate-contentHide  { animation: contentHide  150ms ease-in; }
 }
