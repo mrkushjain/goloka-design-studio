@@ -189,6 +189,7 @@ export default function ContactForm() {
         const params = new URLSearchParams({
           action: 'saveLead',
           secret: process.env.NEXT_PUBLIC_APPS_SCRIPT_PUBLIC_TOKEN ?? '',
+          lead_id: crypto.randomUUID(),
           name: values.fullName.trim(),
           phone: values.phone.trim(),
           city: values.city.trim(),

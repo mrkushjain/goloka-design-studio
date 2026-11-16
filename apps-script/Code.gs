@@ -41,21 +41,59 @@ var SHEETS = {
 
 /**
  * Handles all POST requests to the web app URL.
- * Expected body (JSON):
- *   { secret: "...", action: "...", payload: {...} }
+ *
+ * Accepts TWO body formats so both deployment modes work:
+ *
+ *   1. JSON (Next.js server → Apps Script):
+ *      { secret: "...", action: "saveLead", payload: { lead_id, name, ... } }
+ *
+ *   2. application/x-www-form-urlencoded (static GitHub Pages → Apps Script,
+ *      sent with mode:no-cors so no preflight):
+ *      action=saveLead&secret=...&lead_id=...&name=...&phone=...&city=...
+ *
+ * For URL-encoded form submissions the secret is validated against EITHER
+ * SHARED_SECRET or PUBLIC_TOKEN (a lighter-weight token you can expose in
+ * the browser bundle without risk).
  */
 function doPost(e) {
   try {
-    var body = JSON.parse(e.postData.contents);
+    var contents = e.postData ? e.postData.contents : "";
+    var contentType = e.postData ? e.postData.type : "";
+    var body;
 
-    // --- Auth ---
-    var secret = PropertiesService.getScriptProperties().getProperty("SHARED_SECRET");
-    if (!secret || body.secret !== secret) {
-      return jsonResponse({ ok: false, error: "Unauthorized" }, 401);
+    // --- Parse body ---
+    if (contentType && contentType.indexOf("application/x-www-form-urlencoded") !== -1) {
+      // URL-encoded: parse into a plain object
+      body = parseUrlEncoded(contents);
+    } else {
+      // Default: try JSON
+      try {
+        body = JSON.parse(contents);
+      } catch (parseErr) {
+        // Last resort: maybe content-type header was missing but body is URL-encoded
+        body = parseUrlEncoded(contents);
+      }
     }
 
-    var action  = body.action;
-    var payload = body.payload || {};
+    if (!body) {
+      return jsonResponse({ ok: false, error: "Could not parse request body" });
+    }
+
+    // --- Auth: accept SHARED_SECRET (server) or PUBLIC_TOKEN (browser) ---
+    var props = PropertiesService.getScriptProperties();
+    var sharedSecret = props.getProperty("SHARED_SECRET") || "";
+    var publicToken  = props.getProperty("PUBLIC_TOKEN")  || "";
+    var incoming     = String(body.secret || "");
+
+    var authorised = (sharedSecret && incoming === sharedSecret) ||
+                     (publicToken  && incoming === publicToken);
+
+    if (!authorised) {
+      Logger.log("doPost: auth failed. incoming=" + incoming.slice(0, 6) + "...");
+      return jsonResponse({ ok: false, error: "Unauthorized" });
+    }
+
+    var action = body.action;
 
     // --- Route ---
     switch (action) {
@@ -65,14 +103,37 @@ function doPost(e) {
       case "getProjects":    return jsonResponse(getProjects());
       case "getServices":    return jsonResponse(getServices());
       case "getFaqs":        return jsonResponse(getFaqs());
-      case "saveLead":       return jsonResponse(saveLead(payload));
+      case "saveLead": {
+        // JSON path wraps lead fields in body.payload; URL-encoded path
+        // puts them directly on body — handle both.
+        var lead = body.payload || body;
+        return jsonResponse(saveLead(lead));
+      }
       default:
-        return jsonResponse({ ok: false, error: "Unknown action: " + action }, 400);
+        return jsonResponse({ ok: false, error: "Unknown action: " + action });
     }
   } catch (err) {
     Logger.log("doPost error: " + err.message + "\n" + err.stack);
-    return jsonResponse({ ok: false, error: "Internal server error: " + err.message }, 500);
+    return jsonResponse({ ok: false, error: "Internal server error: " + err.message });
   }
+}
+
+/**
+ * Parses a URL-encoded string (key=value&key2=value2) into a plain object.
+ * Handles + as space and percent-encoded characters.
+ */
+function parseUrlEncoded(str) {
+  if (!str) return {};
+  var result = {};
+  var pairs = str.split("&");
+  for (var i = 0; i < pairs.length; i++) {
+    var idx   = pairs[i].indexOf("=");
+    if (idx < 0) continue;
+    var key   = decodeURIComponent(pairs[i].slice(0, idx).replace(/\+/g, " "));
+    var value = decodeURIComponent(pairs[i].slice(idx + 1).replace(/\+/g, " "));
+    result[key] = value;
+  }
+  return result;
 }
 
 // ---------------------------------------------------------------------------
