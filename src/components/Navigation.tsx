@@ -114,33 +114,20 @@ export default function Navigation() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
 
-            {/* Logo wordmark */}
+            {/* Logo */}
             <a
               href="#"
               aria-label="Goloka Design Studio — home"
-              className="flex flex-col items-start leading-none group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 rounded"
+              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 rounded"
               style={{ outlineColor: '#B8975A' }}
             >
-              <span
-                className="text-2xl tracking-[0.18em] font-semibold transition-colors duration-200"
-                style={{
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
-                  color: '#4A5A3A',
-                  letterSpacing: '0.18em',
-                }}
-              >
-                GOLOKA
-              </span>
-              <span
-                className="text-[10px] tracking-[0.28em] uppercase transition-colors duration-200 mt-0.5"
-                style={{
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
-                  color: '#B8975A',
-                  letterSpacing: '0.28em',
-                }}
-              >
-                Design Studio
-              </span>
+              <img
+                src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/logo.png`}
+                alt="Goloka Design Studio"
+                width={160}
+                height={72}
+                style={{ height: '52px', width: 'auto', objectFit: 'contain' }}
+              />
             </a>
 
             {/* Desktop nav */}

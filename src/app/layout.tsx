@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
   icons: {
-    icon: '/favicon.svg',
+    icon: '/logo.png',
     apple: '/apple-touch-icon.png',
   },
 }
