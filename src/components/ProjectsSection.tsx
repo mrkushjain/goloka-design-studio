@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Project } from '@/types';
 
@@ -244,22 +244,6 @@ function cardHeight(index: number): string {
 
 // ─── Intersection observer hook ───────────────────────────────────────────────
 
-function useInView(threshold = 0.1) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setInView(true); obs.disconnect(); } },
-      { threshold }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, inView };
-}
-
 // ─── Focus trap inside Dialog (Radix handles this, included for safety) ───────
 
 // Radix Dialog ships its own focus trap; we rely on that.
@@ -269,11 +253,10 @@ function useInView(threshold = 0.1) {
 interface ProjectCardProps {
   project: Project;
   index: number;
-  inView: boolean;
   onOpen: (project: Project) => void;
 }
 
-function ProjectCard({ project, index, inView, onOpen }: ProjectCardProps) {
+function ProjectCard({ project, index, onOpen }: ProjectCardProps) {
   const illustrative = isIllustrative(project);
 
   return (
@@ -282,10 +265,6 @@ function ProjectCard({ project, index, inView, onOpen }: ProjectCardProps) {
       className="group relative w-full overflow-hidden rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
       style={{
         height: cardHeight(index),
-        opacity: inView ? 1 : 0,
-        transform: inView ? 'translateY(0) scale(1)' : 'translateY(28px) scale(0.98)',
-        transition: `opacity 0.65s ease ${0.08 * index}s, transform 0.65s ease ${0.08 * index}s`,
-        // brass focus ring
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ['--tw-ring-color' as any]: '#B8955A',
       }}
@@ -524,7 +503,6 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
 
   const [activeCategory, setActiveCategory] = useState<Category>('All');
   const [lightboxProject, setLightboxProject] = useState<Project | null>(null);
-  const { ref: sectionRef, inView } = useInView(0.08);
 
   const filtered = activeCategory === 'All'
     ? displayProjects
@@ -532,27 +510,19 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
 
   return (
     <>
-      {/* Keyframe styles injected once */}
+      {/* Keyframe styles for lightbox only */}
       <style>{`
         @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
         @keyframes scaleIn { from { opacity: 0; transform: translate(-50%, -50%) scale(0.96) } to { opacity: 1; transform: translate(-50%, -50%) scale(1) } }
       `}</style>
 
       <section
-        ref={sectionRef}
         id="our-work"
         className="w-full px-6 py-20 md:px-12 lg:px-20"
         style={{ backgroundColor: '#F9F5EF' }}
       >
         {/* Section heading */}
-        <div
-          className="text-center mb-10"
-          style={{
-            opacity: inView ? 1 : 0,
-            transform: inView ? 'translateY(0)' : 'translateY(24px)',
-            transition: 'opacity 0.7s ease, transform 0.7s ease',
-          }}
-        >
+        <div className="text-center mb-10">
           <p
             className="uppercase tracking-widest text-xs mb-3"
             style={{ color: '#B8955A', fontFamily: 'sans-serif' }}
@@ -576,10 +546,6 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
           className="flex flex-wrap justify-center gap-2 mb-10"
           role="tablist"
           aria-label="Filter projects by category"
-          style={{
-            opacity: inView ? 1 : 0,
-            transition: 'opacity 0.7s ease 0.15s',
-          }}
         >
           {CATEGORIES.map((cat) => {
             const active = cat === activeCategory;
@@ -632,7 +598,6 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
                   <ProjectCard
                     project={project}
                     index={i}
-                    inView={inView}
                     onOpen={setLightboxProject}
                   />
                 </div>
@@ -647,8 +612,6 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
           style={{
             color: '#A89880',
             fontFamily: 'sans-serif',
-            opacity: inView ? 1 : 0,
-            transition: 'opacity 0.7s ease 0.5s',
           }}
         >
           Images marked &ldquo;Illustrative design concept&rdquo; are representative samples to help visualise the possibilities.
