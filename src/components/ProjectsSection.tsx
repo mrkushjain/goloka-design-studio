@@ -4,6 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Project } from '@/types';
 
+// Prepend basePath so local /portfolio/ images resolve correctly on GitHub Pages.
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+function asset(path: string): string {
+  if (!path || path.startsWith('http')) return path;
+  return `${BASE}${path}`;
+}
+
 // ─── Real project photos ──────────────────────────────────────────────────────
 
 const DEFAULT_PROJECTS: Project[] = [
@@ -286,7 +293,7 @@ function ProjectCard({ project, index, inView, onOpen }: ProjectCardProps) {
     >
       {/* Image */}
       <img
-        src={project.cover_image_url}
+        src={asset(project.cover_image_url)}
         alt={`${project.community} — ${project.title}`}
         className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         loading="lazy"
@@ -419,7 +426,7 @@ function Lightbox({ project, onClose }: LightboxProps) {
               {/* Image */}
               <div className="relative w-full" style={{ aspectRatio: '16/9' }}>
                 <img
-                  src={project.cover_image_url}
+                  src={asset(project.cover_image_url)}
                   alt={`${project.community} — ${project.title}`}
                   className="w-full h-full object-cover"
                 />
