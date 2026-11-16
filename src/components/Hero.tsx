@@ -84,7 +84,7 @@ export default function Hero({
             </button>
 
             <a
-              href="#work"
+              href="#projects"
               className="inline-flex items-center justify-center px-7 py-3.5 rounded-sm text-sm font-sans font-medium tracking-wide transition-all duration-200 bg-transparent text-white border border-white/70 hover:border-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
             >
               Explore Our Work
