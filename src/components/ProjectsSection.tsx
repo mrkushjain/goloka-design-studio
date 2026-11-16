@@ -5,10 +5,10 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { Project } from '@/types';
 
 // Prepend basePath so local /portfolio/ images resolve correctly on GitHub Pages.
-const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 function asset(path: string): string {
   if (!path || path.startsWith('http')) return path;
-  return `${BASE}${path}`;
+  const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+  return `${base}${path}`;
 }
 
 // ─── Real project photos ──────────────────────────────────────────────────────

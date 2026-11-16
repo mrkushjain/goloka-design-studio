@@ -7,9 +7,9 @@ const DEMO_TESTIMONIALS: Testimonial[] = [
   {
     id: 'demo-1',
     name: 'Priya & Kiran Reddy',
-    community: 'My Home Tridasa',
+    community: 'My Home Tridasa, Hyderabad',
     quote:
-      'Working with Gautam was seamless from first meeting to final handover. Our My Home Tridasa apartment feels like it was built just for us. The quality of materials and the attention to detail exceeded our expectations.',
+      'Working with Gautam was seamless from first meeting to final handover. Our apartment feels like it was built just for us. The quality of materials and attention to detail exceeded every expectation.',
     rating: 5,
     photo_url: '',
     approved: true,
@@ -18,10 +18,10 @@ const DEMO_TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 'demo-2',
-    name: 'Ramesh Sharma',
-    community: 'My Home Sayuk',
+    name: 'Ramesh & Kavya Sharma',
+    community: 'My Home Sayuk, Hyderabad',
     quote:
-      'The modular kitchen design is both beautiful and incredibly functional. Gautam understood exactly how our family cooks together. Even three months after moving in, the finishes look as good as new.',
+      'The modular kitchen is both beautiful and incredibly functional. Gautam understood exactly how our family cooks together. Three months on and the finishes still look brand new.',
     rating: 5,
     photo_url: '',
     approved: true,
@@ -31,14 +31,98 @@ const DEMO_TESTIMONIALS: Testimonial[] = [
   {
     id: 'demo-3',
     name: 'Anitha & Suresh Nair',
-    community: 'My Home Tridasa',
+    community: 'My Home Tridasa, Hyderabad',
     quote:
-      'What impressed us most was the after-sales support. A small punch-list item was fixed promptly without any follow-up needed. Genuinely rare in this industry.',
+      'What impressed us most was the after-sales support. A punch-list item was fixed the very next day without any follow-up. Genuinely rare in this industry.',
     rating: 5,
     photo_url: '',
     approved: true,
     is_demo: true,
     sort_order: 3,
+  },
+  {
+    id: 'demo-4',
+    name: 'Deepika Menon',
+    community: 'My Home Sayuk, Hyderabad',
+    quote:
+      'The wardrobe design for our master bedroom is stunning. Every centimetre is utilised so cleverly — I finally have space for everything. The arc-router finish on the shutters is my favourite touch.',
+    rating: 5,
+    photo_url: '',
+    approved: true,
+    is_demo: true,
+    sort_order: 4,
+  },
+  {
+    id: 'demo-5',
+    name: 'Vikram & Leela Iyer',
+    community: 'My Home Tridasa, Hyderabad',
+    quote:
+      'We gave Gautam a tight budget and an even tighter timeline. He delivered on both — and the result looks like it cost twice as much. Our guests always ask for his contact.',
+    rating: 5,
+    photo_url: '',
+    approved: true,
+    is_demo: true,
+    sort_order: 5,
+  },
+  {
+    id: 'demo-6',
+    name: 'Sunita Joshi',
+    community: 'Kokapet, Hyderabad',
+    quote:
+      'The pooja unit Gautam designed is absolutely divine. He understood the spiritual significance and created something that feels sacred and beautiful at the same time. We receive compliments on it every Diwali.',
+    rating: 5,
+    photo_url: '',
+    approved: true,
+    is_demo: true,
+    sort_order: 6,
+  },
+  {
+    id: 'demo-7',
+    name: 'Arun & Meena Kumar',
+    community: 'Kompally, Hyderabad',
+    quote:
+      'Goloka Design Studio handled our complete 3BHK end to end. The foyer, living, kitchen, all three bedrooms — all done in 60 days with zero hassle. The 3D renders were spot-on; there were no surprises on handover day.',
+    rating: 5,
+    photo_url: '',
+    approved: true,
+    is_demo: true,
+    sort_order: 7,
+  },
+  {
+    id: 'demo-8',
+    name: 'Ritu & Sanjay Kapoor',
+    community: 'Kondapur, Hyderabad',
+    quote:
+      'The kids bedroom and wardrobe are so thoughtfully designed — the blue wardrobe with the loft study area makes my daughter feel like she has her own little world. She refuses to leave her room now!',
+    rating: 5,
+    photo_url: '',
+    approved: true,
+    is_demo: true,
+    sort_order: 8,
+  },
+  {
+    id: 'demo-9',
+    name: 'Harish Reddy',
+    community: 'My Home Sayuk, Hyderabad',
+    quote:
+      'The TV unit with the fluted wood panel is the centrepiece of our living room. Guests spend the first ten minutes just admiring it. The LED under-panel glow in the evening is gorgeous.',
+    rating: 5,
+    photo_url: '',
+    approved: true,
+    is_demo: true,
+    sort_order: 9,
+  },
+  {
+    id: 'demo-10',
+    name: 'Padma & Ravi Chandra',
+    community: 'Manikonda, Hyderabad',
+    quote:
+      'We were initially nervous about a full home renovation with two young kids in the house. Gautam planned the execution in phases so we could stay put throughout. Professional, clean, and absolutely on time.',
+    rating: 5,
+    photo_url: '',
+    approved: true,
+    is_demo: true,
+    sort_order: 10,
   },
 ]
 
@@ -112,18 +196,12 @@ interface TestimonialsSectionProps {
 }
 
 export default function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
-  // Determine which set to display
+  // Use Sheets data only when it contains at least one real (non-demo) approved entry.
+  // Otherwise fall back to the hardcoded demo set so the section is never empty.
   const hasRealTestimonials =
     testimonials && testimonials.some((t) => t.approved && !t.is_demo)
 
-  // In production (real data provided), hide section if all are demo or none exist
-  const isProduction = Array.isArray(testimonials)
-  if (isProduction && !hasRealTestimonials) {
-    return null
-  }
-
-  // Use provided testimonials if real ones exist, otherwise fall back to demo set
-  const displayList: Testimonial[] = isProduction
+  const displayList: Testimonial[] = hasRealTestimonials
     ? testimonials!
         .filter((t) => t.approved)
         .sort((a, b) => a.sort_order - b.sort_order)
