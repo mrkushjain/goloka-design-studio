@@ -122,7 +122,7 @@ export default function Navigation() {
               style={{ outlineColor: '#B8975A' }}
             >
               <img
-                src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/logo.png`}
+                src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/logo.webp`}
                 alt="Goloka Design Studio"
                 width={160}
                 height={72}
