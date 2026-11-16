@@ -145,7 +145,10 @@ export default function ContactForm() {
       errs.consent = 'Please give your consent to proceed.'
     }
 
-    if (!turnstileTokenRef.current) {
+    // Only require CAPTCHA when the site key is actually configured.
+    // Without a key the widget never renders, so we skip the check gracefully.
+    const hasCaptcha = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+    if (hasCaptcha && !turnstileTokenRef.current) {
       errs.captcha = 'Please complete the security check.'
     }
 
