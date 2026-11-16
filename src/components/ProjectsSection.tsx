@@ -4,105 +4,229 @@ import { useEffect, useRef, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Project } from '@/types';
 
-// ─── Default projects (shown when API unavailable) ───────────────────────────
+// ─── Real project photos ──────────────────────────────────────────────────────
 
 const DEFAULT_PROJECTS: Project[] = [
+  // ── My Home Tridasa ─────────────────────────────────────────────────────────
   {
-    id: 'default-1',
-    title: 'Living Room',
+    id: 'tridasa-tv-chandelier',
+    title: 'TV Unit with Crystal Chandelier',
     community: 'My Home Tridasa',
     category: 'Living',
     description:
-      'An airy living room designed for a Tridasa community home — warm tones, curated art, and abundant natural light.',
-    cover_image_url:
-      'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&q=80',
-    gallery_image_urls: '',
-    image_kind: 'stock',
+      'Floating TV panel with clean white lacquer finish, V-pull drawers, and a stunning crystal chandelier that anchors the living space.',
+    cover_image_url: '/portfolio/tv-unit-chandelier.png',
+    gallery_image_urls: '/portfolio/tv-unit-chandelier.png,/portfolio/living-partition-grid.png',
+    image_kind: 'real',
     published: true,
     sort_order: 1,
   },
   {
-    id: 'default-2',
-    title: 'Kitchen',
+    id: 'tridasa-tv-marble',
+    title: 'TV Unit — Marble Accent Wall',
     community: 'My Home Tridasa',
-    category: 'Kitchen',
+    category: 'Living',
     description:
-      'A modern modular kitchen with matte finishes, handleless cabinetry, and a view that makes cooking a pleasure.',
-    cover_image_url:
-      'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80',
-    gallery_image_urls: '',
-    image_kind: 'stock',
+      'Wall-mounted TV unit with Calacatta marble-effect panel, flanked by warm teak open shelving and a fluted wood accent column.',
+    cover_image_url: '/portfolio/tv-unit-marble-panel.png',
+    gallery_image_urls: '/portfolio/tv-unit-marble-panel.png,/portfolio/tv-unit-fluted-wood.png',
+    image_kind: 'real',
     published: true,
     sort_order: 2,
   },
   {
-    id: 'default-3',
-    title: 'Master Bedroom',
+    id: 'tridasa-living-partition',
+    title: 'Living Room Partition',
     community: 'My Home Tridasa',
-    category: 'Bedroom',
+    category: 'Living',
     description:
-      'A serene master bedroom retreat — custom upholstered headboard, layered lighting, and a palette drawn from nature.',
-    cover_image_url:
-      'https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=800&q=80',
-    gallery_image_urls: '',
-    image_kind: 'stock',
+      'An open grid partition in white — a design element that separates spaces while keeping the apartment feeling open and airy.',
+    cover_image_url: '/portfolio/living-partition-grid.png',
+    gallery_image_urls: '/portfolio/living-partition-grid.png',
+    image_kind: 'real',
     published: true,
     sort_order: 3,
   },
   {
-    id: 'default-4',
-    title: 'Living Space',
-    community: 'My Home Sayuk',
-    category: 'Living',
+    id: 'tridasa-kitchen-pink',
+    title: 'Modular Kitchen — Rose Blush',
+    community: 'My Home Tridasa',
+    category: 'Kitchen',
     description:
-      'Open-plan living designed for a Sayuk family home — flexible seating, bespoke joinery, and an inviting warmth.',
-    cover_image_url:
-      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=80',
-    gallery_image_urls: '',
-    image_kind: 'stock',
+      'Modular kitchen in a soft rose-blush finish with black aluminium shutters, marble-effect backsplash, and an integrated chimney.',
+    cover_image_url: '/portfolio/kitchen-pink-overview.png',
+    gallery_image_urls: '/portfolio/kitchen-pink-overview.png,/portfolio/kitchen-pink-shutter.png',
+    image_kind: 'real',
     published: true,
     sort_order: 4,
   },
   {
-    id: 'default-5',
-    title: 'Dining Area',
-    community: 'My Home Sayuk',
-    category: 'Dining',
+    id: 'tridasa-kitchen-grey',
+    title: 'Modular Kitchen — Slate Blue',
+    community: 'My Home Tridasa',
+    category: 'Kitchen',
     description:
-      'A warm dining area in a Sayuk home — a statement pendant, solid-wood table, and thoughtful spatial flow.',
-    cover_image_url:
-      'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800&q=80',
-    gallery_image_urls: '',
-    image_kind: 'stock',
+      'High-gloss slate-blue wall cabinets with under-shelf LED lighting, open display niches, and a crisp white countertop.',
+    cover_image_url: '/portfolio/kitchen-grey-open.png',
+    gallery_image_urls: '/portfolio/kitchen-grey-open.png,/portfolio/kitchen-grey-upper.png',
+    image_kind: 'real',
     published: true,
     sort_order: 5,
   },
   {
-    id: 'default-6',
-    title: 'Bedroom',
-    community: 'My Home Sayuk',
-    category: 'Bedroom',
+    id: 'tridasa-wardrobe-arc',
+    title: 'Wardrobe — Arc Router Design',
+    community: 'My Home Tridasa',
+    category: 'Wardrobe',
     description:
-      'A calm, clutter-free bedroom in a Sayuk home — built-in storage, soft drapery, and a colour story that soothes.',
-    cover_image_url:
-      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=80',
-    gallery_image_urls: '',
-    image_kind: 'stock',
+      'Four-door floor-to-ceiling wardrobe in off-white with elegant arc router detailing and sleek matte-black bar handles.',
+    cover_image_url: '/portfolio/wardrobe-arc-design.png',
+    gallery_image_urls: '/portfolio/wardrobe-arc-design.png,/portfolio/wardrobe-sliding-beige.png',
+    image_kind: 'real',
     published: true,
     sort_order: 6,
   },
+  {
+    id: 'tridasa-wardrobe-sliding',
+    title: 'Sliding Wardrobe — Two-tone',
+    community: 'My Home Tridasa',
+    category: 'Wardrobe',
+    description:
+      'Sliding wardrobe with a two-tone panel design — white and warm beige — framed in brushed aluminium with recessed pulls.',
+    cover_image_url: '/portfolio/wardrobe-sliding-beige.png',
+    gallery_image_urls: '/portfolio/wardrobe-sliding-beige.png',
+    image_kind: 'real',
+    published: true,
+    sort_order: 7,
+  },
+  // ── My Home Sayuk ───────────────────────────────────────────────────────────
+  {
+    id: 'sayuk-bedroom-mural',
+    title: 'Master Bedroom — Mountain Mural',
+    community: 'My Home Sayuk',
+    category: 'Bedroom',
+    description:
+      'Master bedroom with a dramatic landscape mural wall, padded leather headboard, platform bed, and LED false-ceiling details.',
+    cover_image_url: '/portfolio/bedroom-mural-wardrobe.png',
+    gallery_image_urls: '/portfolio/bedroom-mural-wardrobe.png,/portfolio/bedroom-mural-platform.png',
+    image_kind: 'real',
+    published: true,
+    sort_order: 8,
+  },
+  {
+    id: 'sayuk-study-vanity',
+    title: 'Study & Vanity Unit',
+    community: 'My Home Sayuk',
+    category: 'Bedroom',
+    description:
+      'Warm walnut study unit with wall-mounted cabinets, a curved desk surface, integrated lighting, and open display shelving.',
+    cover_image_url: '/portfolio/study-vanity-unit.png',
+    gallery_image_urls: '/portfolio/study-vanity-unit.png,/portfolio/study-desk-unit.png',
+    image_kind: 'real',
+    published: true,
+    sort_order: 9,
+  },
+  {
+    id: 'sayuk-storage-combo',
+    title: 'Storage & Pooja Combo Unit',
+    community: 'My Home Sayuk',
+    category: 'Living',
+    description:
+      'Multi-functional unit combining overhead storage, a crockery counter, open display shelves, and a compact pooja cabinet.',
+    cover_image_url: '/portfolio/storage-unit-combo.png',
+    gallery_image_urls: '/portfolio/storage-unit-combo.png',
+    image_kind: 'real',
+    published: true,
+    sort_order: 10,
+  },
+  {
+    id: 'sayuk-kitchen-fridge',
+    title: 'Kitchen — Warm Wood & Glass',
+    community: 'My Home Sayuk',
+    category: 'Kitchen',
+    description:
+      'Open-plan kitchen with warm wood cabinets, glass-shutter wall units backlit in amber, and clean white base counters.',
+    cover_image_url: '/portfolio/kitchen-fridge-unit.png',
+    gallery_image_urls: '/portfolio/kitchen-fridge-unit.png',
+    image_kind: 'real',
+    published: true,
+    sort_order: 11,
+  },
+  {
+    id: 'sayuk-wardrobe-kids',
+    title: "Kid's Wardrobe — Blue & White",
+    community: 'My Home Sayuk',
+    category: 'Wardrobe',
+    description:
+      'Cheerful two-tone wardrobe for a child\'s room — muted steel blue lower doors with white loft cabinets and playful dinosaur handles.',
+    cover_image_url: '/portfolio/wardrobe-kids-blue.png',
+    gallery_image_urls: '/portfolio/wardrobe-kids-blue.png',
+    image_kind: 'real',
+    published: true,
+    sort_order: 12,
+  },
+  {
+    id: 'sayuk-pooja-krishna',
+    title: 'Pooja Unit — Krishna Mandir',
+    community: 'My Home Sayuk',
+    category: 'Pooja',
+    description:
+      'Beautifully crafted pooja unit with a backlit arched Krishna mural, marble finish, turned wooden columns, and a stepped prasad shelf.',
+    cover_image_url: '/portfolio/pooja-krishna-arch.png',
+    gallery_image_urls: '/portfolio/pooja-krishna-arch.png,/portfolio/pooja-tirupati.png',
+    image_kind: 'real',
+    published: true,
+    sort_order: 13,
+  },
+  {
+    id: 'sayuk-pooja-ganesha',
+    title: 'Pooja Unit — Ganesha Mandir',
+    community: 'My Home Sayuk',
+    category: 'Pooja',
+    description:
+      'Warm copper-toned mandir with hand-painted Ganesha glass panels, arched top details, brass bell accents, and a side display cabinet.',
+    cover_image_url: '/portfolio/pooja-ganesha-doors.png',
+    gallery_image_urls: '/portfolio/pooja-ganesha-doors.png,/portfolio/pooja-elephant-doors.png',
+    image_kind: 'real',
+    published: true,
+    sort_order: 14,
+  },
+  {
+    id: 'sayuk-foyer',
+    title: 'Foyer — Mirror & Storage',
+    community: 'My Home Sayuk',
+    category: 'Living',
+    description:
+      'Slim entrance foyer unit with a tall arched mirror, decorative pendant, and a compact storage cabinet — a welcoming first impression.',
+    cover_image_url: '/portfolio/foyer-mirror-cabinet.png',
+    gallery_image_urls: '/portfolio/foyer-mirror-cabinet.png',
+    image_kind: 'real',
+    published: true,
+    sort_order: 15,
+  },
+  {
+    id: 'sayuk-tv-fluted',
+    title: 'TV Unit — Fluted Wood Panel',
+    community: 'My Home Sayuk',
+    category: 'Living',
+    description:
+      'TV wall featuring fluted teak wood cladding, a floating media console with under-unit LED strip, and a tall glass display cabinet.',
+    cover_image_url: '/portfolio/tv-unit-fluted-wood.png',
+    gallery_image_urls: '/portfolio/tv-unit-fluted-wood.png',
+    image_kind: 'real',
+    published: true,
+    sort_order: 16,
+  },
 ];
 
-const CATEGORIES = ['All', 'Living', 'Kitchen', 'Bedroom', 'Dining'] as const;
+const CATEGORIES = ['All', 'Living', 'Kitchen', 'Bedroom', 'Wardrobe', 'Pooja'] as const;
 type Category = (typeof CATEGORIES)[number];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function isIllustrative(project: Project): boolean {
-  return (
-    project.image_kind === 'stock' ||
-    project.id.startsWith('default-')
-  );
+  // Only mark as illustrative if explicitly flagged as stock
+  return project.image_kind === 'stock';
 }
 
 /** Stagger index → pixel height for a loose masonry feel */
