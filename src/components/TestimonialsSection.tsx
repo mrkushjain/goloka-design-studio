@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+// no useState needed — marquee is CSS-driven
 import type { Testimonial } from '@/types'
 
 const DEMO_TESTIMONIALS: Testimonial[] = [
@@ -212,20 +212,10 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
   return <TestimonialsInner testimonials={displayList} />
 }
 
-// Inner component that holds navigation state so we avoid hooks conditionally
+// Inner component — infinite horizontal marquee, pauses on hover
 function TestimonialsInner({ testimonials }: { testimonials: Testimonial[] }) {
-  const total = testimonials.length
-  // Show 2 per "page" on desktop, 1 on mobile — drive navigation in steps of 1
-  const [activeIndex, setActiveIndex] = useState(0)
-
-  const prev = () => setActiveIndex((i) => (i - 1 + total) % total)
-  const next = () => setActiveIndex((i) => (i + 1) % total)
-
-  // Visible pair: activeIndex and activeIndex+1 (wraps)
-  const visiblePair = [
-    testimonials[activeIndex],
-    testimonials[(activeIndex + 1) % total],
-  ]
+  // Duplicate list so the loop scrolls seamlessly
+  const doubled = [...testimonials, ...testimonials]
 
   return (
     <section
@@ -235,7 +225,7 @@ function TestimonialsInner({ testimonials }: { testimonials: Testimonial[] }) {
     >
       <div className="container-site">
         {/* Section header */}
-        <header className="mb-12 md:mb-16 flex flex-col gap-3">
+        <header className="mb-10 flex flex-col gap-3">
           <p className="font-sans text-brass text-xs tracking-[0.25em] uppercase">
             Client Stories
           </p>
@@ -246,88 +236,39 @@ function TestimonialsInner({ testimonials }: { testimonials: Testimonial[] }) {
             What Our Homeowners Say
           </h2>
         </header>
+      </div>
 
-        {/* Cards grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-          {/* Mobile: show only activeIndex */}
-          <div className="md:hidden">
-            <TestimonialCard testimonial={testimonials[activeIndex]} />
-          </div>
+      {/* Marquee — full-bleed, overflows container intentionally */}
+      <style>{`
+        @keyframes marquee-scroll {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .marquee-track {
+          animation: marquee-scroll 40s linear infinite;
+        }
+        .marquee-track:hover,
+        .marquee-track:focus-within {
+          animation-play-state: paused;
+        }
+      `}</style>
 
-          {/* Desktop: show visiblePair */}
-          {visiblePair.map((t, idx) => (
-            <div key={`${t.id}-${activeIndex}-${idx}`} className="hidden md:block">
+      <div className="overflow-hidden w-full" aria-label="Scrolling client testimonials">
+        <div
+          className="marquee-track flex gap-6"
+          style={{ width: 'max-content' }}
+        >
+          {doubled.map((t, idx) => (
+            <div
+              key={`${t.id}-${idx}`}
+              className="shrink-0"
+              style={{ width: 'clamp(300px, 36vw, 480px)' }}
+              aria-hidden={idx >= testimonials.length ? 'true' : undefined}
+            >
               <TestimonialCard testimonial={t} />
             </div>
           ))}
         </div>
-
-        {/* Navigation controls */}
-        {total > 1 && (
-          <nav
-            className="mt-10 flex items-center gap-6"
-            aria-label="Testimonials navigation"
-          >
-            <button
-              onClick={prev}
-              aria-label="Previous testimonial"
-              className="group flex items-center justify-center w-11 h-11 rounded-full border border-brass/40 text-brass transition-colors hover:bg-brass hover:border-brass focus-visible:outline-2 focus-visible:outline-brass focus-visible:outline-offset-2"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-4 h-4 group-hover:text-olive-dark transition-colors"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-
-            {/* Dot indicators */}
-            <ol className="flex gap-2" aria-label="Testimonial position">
-              {testimonials.map((_, i) => (
-                <li key={i}>
-                  <button
-                    onClick={() => setActiveIndex(i)}
-                    aria-label={`Go to testimonial ${i + 1}`}
-                    aria-current={i === activeIndex ? 'true' : undefined}
-                    className={[
-                      'w-2 h-2 rounded-full transition-all focus-visible:outline-2 focus-visible:outline-brass focus-visible:outline-offset-2',
-                      i === activeIndex
-                        ? 'bg-brass scale-125'
-                        : 'bg-white/25 hover:bg-white/50',
-                    ].join(' ')}
-                  />
-                </li>
-              ))}
-            </ol>
-
-            <button
-              onClick={next}
-              aria-label="Next testimonial"
-              className="group flex items-center justify-center w-11 h-11 rounded-full border border-brass/40 text-brass transition-colors hover:bg-brass hover:border-brass focus-visible:outline-2 focus-visible:outline-brass focus-visible:outline-offset-2"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-4 h-4 group-hover:text-olive-dark transition-colors"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-          </nav>
-        )}
       </div>
     </section>
   )
