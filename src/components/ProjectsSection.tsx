@@ -509,7 +509,11 @@ interface ProjectsSectionProps {
 }
 
 export default function ProjectsSection({ projects }: ProjectsSectionProps) {
-  const displayProjects = projects && projects.length > 0 ? projects : DEFAULT_PROJECTS;
+  // Fall back to hardcoded real photos when the Sheets data contains only
+  // stock/sample images (image_kind !== 'real'), so the portfolio always shows
+  // real photos until the user updates their Sheets with actual project data.
+  const hasRealPhotos = projects && projects.length > 0 && projects.some((p) => p.image_kind === 'real');
+  const displayProjects = hasRealPhotos ? projects! : DEFAULT_PROJECTS;
 
   const [activeCategory, setActiveCategory] = useState<Category>('All');
   const [lightboxProject, setLightboxProject] = useState<Project | null>(null);
